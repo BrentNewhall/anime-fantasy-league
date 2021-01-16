@@ -181,9 +181,9 @@ function loadChanges() {
 			</thead>
 			<tbody>
 			{#each team.anime as anime}
-				<tr><td>{anime.name}</td><td>{anime.score}</td></tr>
+				<tr><td class="anime-name">{anime.name}</td><td class="score">{anime.score}</td></tr>
 			{/each}
-			<tr><td><em>Total:</em></td><td>{team.totalScore}</td></tr>
+			<tr><td class="total">Total:</td><td class="score total">{team.totalScore}</td></tr>
 			</tbody>
 			</table>
 			{#if teamIndex == currDraft}
@@ -221,6 +221,18 @@ function loadChanges() {
 		text-transform: uppercase;
 		font-size: 4em;
 		font-weight: 100;
+	}
+
+	td.anime-name {
+		font-style: italic;
+	}
+
+	td.score {
+		text-align: right;
+	}
+
+	td.total {
+		font-weight: bold;
 	}
 
 	.teams {
