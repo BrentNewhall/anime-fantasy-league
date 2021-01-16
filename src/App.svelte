@@ -237,6 +237,7 @@ function loadChanges() {
 	}
 
 	h2 {
+		text-align: center;
 		color: #607AA8;
 		font-size: 2em;
 	}
@@ -260,9 +261,9 @@ function loadChanges() {
 		color: #607AA8;
 		background-color: transparent;
 		border: 0px;
+		width: 100%;
+		text-align: center;
 	}
-
-	input[type="radio"]:checked+label{ background-color: blue; }
 
 	table {
 		width: 100%;
@@ -278,6 +279,9 @@ function loadChanges() {
 
 	td.total {
 		font-weight: bold;
+	}
+	tr:nth-child(even) {
+		background-color: #f3efe8;
 	}
 
 	.load-bar {
