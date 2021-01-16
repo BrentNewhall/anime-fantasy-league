@@ -215,6 +215,11 @@ function loadChanges() {
 		margin: 0 auto;
 	}
 
+	button {
+		background-color: #607AA8;
+		color: #FFFBF2;
+	}
+
 	h1 {
 		text-align: center;
 		color: #607AA8;
