@@ -5,6 +5,8 @@ const store = writable(localStorage.getItem("store") || "");
 
 store.subscribe(val => localStorage.setItem("store", val))
 
+export let targetYear = 2021;
+export let targetSeason = "SPRING";
 export let currDraft = 0;
 export let teams = [];
 export let league_size = 2;
@@ -100,7 +102,7 @@ const options = {
 };
 
 function refreshAnilistData() {
-	fetch('https://graphql.anilist.co', getOptionsForSeason(2021,"WINTER")).then( r => r.json() ).then( data => {
+	fetch('https://graphql.anilist.co', getOptionsForSeason(targetYear,targetSeason)).then( r => r.json() ).then( data => {
 		console.log( "Success" );
 		console.log( data.data.Page.media );
 	}).catch( err => {
@@ -109,11 +111,17 @@ function refreshAnilistData() {
 }
 
 function reloadDataFromAnilist() {
-	fetch('https://graphql.anilist.co', getOptionsForSeason(2021,"WINTER")).then( r => r.json() ).then( data => {
+	fetch('https://graphql.anilist.co', getOptionsForSeason(targetYear,targetSeason)).then( r => r.json() ).then( data => {
 		console.log( "Success" );
-		console.log( data.data.Page.media );
+		//console.log( data.data.Page.media );
 		animeList = [];
-		data.data.Page.media.forEach( element => { animeList.push( element["title"]["english"] ) } );
+		data.data.Page.media.forEach( element => {
+			let name = element["title"]["english"];
+			if( name === null ) {
+				name = element["title"]["romaji"];
+			}
+			animeList.push( { id: element["id"], name, averageScore: element["averageScore"] } )
+		} );
 	}).catch( err => {
 		console.error( "No good." );
 	});
@@ -141,8 +149,11 @@ function setLeagueSize() {
 }
 function draftAnime() {
 	const selectedAnime = animeList[selectedDraft];
-	const score = Math.floor(Math.random() * 100);
-	teams[currDraft].anime.push( { name: selectedAnime, score } ); // Add to user's anime
+	let score = parseInt(selectedAnime["averageScore"]);
+	if( isNaN(score) ) {
+		score = 0;
+	}
+	teams[currDraft].anime.push( { id: selectedAnime["id"], name: selectedAnime["name"], score } ); // Add to user's anime
 	teams[currDraft].totalScore += score;
 	animeList.splice( selectedDraft, 1 ); // Remove from anime list
 	currDraft += 1; // Go to next user
@@ -210,7 +221,7 @@ function loadChanges() {
 		<div class="draft-list">
 			<h2>Draft for {teams[currDraft].name}</h2>
 			{#each animeList as anime,animeIndex}
-				<label><input type="radio" name="draft-anime" bind:group={selectedDraft} value={animeIndex} /> {anime}</label>
+				<label><input type="radio" name="draft-anime" bind:group={selectedDraft} value={animeIndex} /> {anime["name"]}</label>
 			{/each}
 			<button on:click={draftAnime}>Save this draft</button>
 		</div>
