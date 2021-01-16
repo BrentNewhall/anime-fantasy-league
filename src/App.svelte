@@ -72,8 +72,6 @@ function refreshAnilistData() {
 
 function reloadDataFromAnilist() {
 	fetch('https://graphql.anilist.co', getOptionsForSeason(targetYear,targetSeason)).then( r => r.json() ).then( data => {
-		console.log( "Success" );
-		//console.log( data.data.Page.media );
 		animeList = [];
 		data.data.Page.media.forEach( element => {
 			let name = element["title"]["english"];
@@ -147,21 +145,23 @@ function loadChanges() {
 
 <nav>
 	<h1>Anime Fantasy League</h1>
-	<label>Season:
+	<div class="load-bar">
+	<label class="load-bar-item">Season:
 		<select bind:value={targetSeason}>
 			{#each avlSeasons as season}
 			<option value={season}>{season}</option>
 			{/each}
 		</select>
 	</label>
-	<label>Year:
+	<label class="load-bar-item">Year:
 		<select bind:value={targetYear}>
 			{#each avlYears as year}
 			<option value={year}>{year}</option>
 			{/each}
 		</select>
 	</label>
-	<button on:click={reloadDataFromAnilist}>Fetch data from AniList</button><br />
+	<div class="load-bar-item"><button on:click={reloadDataFromAnilist}>Fetch data from AniList</button></div>
+	</div>
 	<button on:click={saveChanges}>Save</button>
 	<button on:click={loadChanges}>Load</button>
 </nav>
@@ -233,6 +233,16 @@ function loadChanges() {
 
 	td.total {
 		font-weight: bold;
+	}
+
+	.load-bar {
+		display: flex;
+		flex-direction: row;
+		justify-content: flex-start;
+	}
+
+	.load-bar-item {
+		margin-right: 1em;
 	}
 
 	.teams {
