@@ -11,54 +11,14 @@ export let currDraft = 0;
 export let teams = [];
 export let league_size = 2;
 
+const avlSeasons = ["WINTER","SPRING","SUMMER","FALL"];
+const avlYears = [2021,2022,2023,2024,2025];
+
 let selectedDraft = 0;
 let draftVisible = false;
 
 const teamNames = ["Akari","Akito","Hana","Haru","Hinata","Hiroto","Itsuki","Kaito","Kana","Kei","Koharu","Minato","Ren","Riku","Sana","Tsumugi","Yamato"]
-let animeList = [
-"2.43: Seiin High School Boys Volleyball Team [2.43: Seiin Koukou Danshi Volley-bu]",
-"Attack on Titan Final Season [Shingeki no Kyojin: The Final Season]",
-"BACK ARROW [Back Arrow]",
-"BEASTARS Season 2 [BEASTARS 2]",
-"Bottom-Tier Character Tomozaki [Jaku-Chara Tomozaki-kun]",
-"Cells at Work!! [Hataraku Saibou!!]",
-"Dr. STONE: STONE WARS [Dr. STONE: STONE WARS]",
-"EX-ARM [EX-ARM]",
-"Hortensia SAGA [Hortensia Saga]",
-"ICHU [ICHU: HALFWAY THROUGH THE IDOL]",
-"Idoly Pride [IDOLY PRIDE]",
-"Kemono Jihen [Kemono Jihen]",
-"LAID-BACK CAMP SEASON2 [Yuru Camp SEASON 2]",
-"Mushoku Tensei: Jobless Reincarnation [Mushoku Tensei: Isekai Ittara Honki Dasu]",
-"Non Non Biyori Nonstop [Non Non Biyori: Nonstop]",
-"Redo of Healer [Kaifuku Jutsushi no Yarinaoshi]",
-"Show by Rock!! Stars!! [SHOW BY ROCK!! STARS!!]",
-"Skate-Leading Stars [Skate-LeadingStars]",
-"So I'm a Spider, So What? [Kumo desu ga, Nani ka?]",
-"Suppose a Kid from the Last Dungeon Boonies moved to a starter town? [Tatoeba Last Dungeon Mae no Mura no Shounen ga Joban no Machi de Kurasu Youna Monogatari]",
-"That Time I Got Reincarnated as a Slime Season 2 [Tensei Shitara Slime Datta Ken 2nd Season]",
-"The Promised Neverland Season 2 [Yakusoku no Neverland 2]",
-"The Quintessential Quintuplets 2 [5-Toubun no Hanayome ]",
-"World Trigger 2nd Season [World Trigger 2]",
-"True Cooking Master Boy Season 2 [Shin Chuuka Ichiban! 2]",
-"Log Horizon: Destruction of the Round Table [Log Horizon: Entaku Houkai]",
-"Otherside Picnic [Ura Sekai Picnic]",
-"The Seven Deadly Sins: Dragon's Judgment [Nanatsu no Taizai: Fundo no Shinpan]",
-"WIXOSS DIVA(A)LIVE [WIXOSS DIVA(A)LIVE]",
-"Sorcerous Stabber Orphen: Battle of Kimluck [Majutsushi Orphen Hagure Tabi: Kimluck-hen]",
-"Cells at Work! CODE BLACK [Hataraku Saibou BLACK]",
-"Heaven's Design Team",
-"The Hidden Dungeon Only I Can Enter [Ore dake Haireru Kakushi Dungeon]",
-"LBX Girls [Soukou Musume Senki]",
-"Re:ZERO -Starting Life in Another World- Season 2 Part 2 [Re:Zero kara Hajimeru Isekai Seikatsu 2nd Season Part 2]",
-"Dr. Ramune -Mysterious Disease Specialist- [Kai Byoui Ramune]",
-"Scar on the Praeter [Praeter no Kizu]",
-"Horimiya [Horimiya]",
-"Gekidol [Gekidol]",
-"SK8 the Infinity [SK]",
-"Umamusume: Pretty Derby Season 2 [Uma Musume: Pretty Derby Season 2]",
-"WONDER EGG PRIORITY [Wonder Egg Priority]"
-];
+let animeList = [];
 
 const aniListQuery = JSON.stringify({
 	query: `{
@@ -187,13 +147,26 @@ function loadChanges() {
 
 <nav>
 	<h1>Anime Fantasy League</h1>
-	<label>Season: <input name="season" bind:value={targetSeason} /></label>
-	<label>Year: <input name="year" bind:value={targetYear} /></label>
+	<label>Season:
+		<select bind:value={targetSeason}>
+			{#each avlSeasons as season}
+			<option value={season}>{season}</option>
+			{/each}
+		</select>
+	</label>
+	<label>Year:
+		<select bind:value={targetYear}>
+			{#each avlYears as year}
+			<option value={year}>{year}</option>
+			{/each}
+		</select>
+	</label>
 	<button on:click={reloadDataFromAnilist}>Fetch data from AniList</button><br />
 	<button on:click={saveChanges}>Save</button>
 	<button on:click={loadChanges}>Load</button>
 </nav>
 
+{#if animeList.length > 0}
 <main>
 	<p>Number of people in your league:</p>
 	<input name="league_size" bind:value={league_size} />
@@ -229,6 +202,7 @@ function loadChanges() {
 		</div>
 	{/if}
 </main>
+{/if}
 
 <style>
 /* ----- END HTML ----- */
