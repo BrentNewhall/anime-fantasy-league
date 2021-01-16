@@ -187,9 +187,11 @@ function loadChanges() {
 
 <nav>
 	<h1>Anime Fantasy League</h1>
+	<label>Season: <input name="season" bind:value={targetSeason} /></label>
+	<label>Year: <input name="year" bind:value={targetYear} /></label>
+	<button on:click={reloadDataFromAnilist}>Fetch data from AniList</button><br />
 	<button on:click={saveChanges}>Save</button>
 	<button on:click={loadChanges}>Load</button>
-	<button on:click={reloadDataFromAnilist}>Fetch data from AniList</button>
 </nav>
 
 <main>
