@@ -145,6 +145,8 @@ function loadChanges() {
 
 <nav>
 	<h1>Anime Fantasy League</h1>
+	<button class="nav-button" on:click={loadChanges}>Load</button>
+	<button class="nav-button" on:click={saveChanges}>Save</button>
 	<div class="load-bar">
 	<label class="load-bar-item">Season:
 		<select bind:value={targetSeason}>
@@ -162,8 +164,6 @@ function loadChanges() {
 	</label>
 	<div class="load-bar-item"><button on:click={reloadDataFromAnilist}>Fetch data from AniList</button></div>
 	</div>
-	<button on:click={saveChanges}>Save</button>
-	<button on:click={loadChanges}>Load</button>
 </nav>
 
 {#if animeList.length > 0}
@@ -173,8 +173,8 @@ function loadChanges() {
 	<button on:click={setLeagueSize}>Set</button>
 	<div class="teams">
 		{#each teams as team,teamIndex}
-		<div class="team">
-			<h2><input bind:value={team.name} /></h2>
+		<div class="team {teamIndex > 0 ? "team-with-border" : ""}">
+			<h2><input class="team-name" bind:value={team.name} /></h2>
 			<table>
 			<thead>
 				<tr><th>Anime Title</th><th>Score</th></tr>
@@ -198,7 +198,7 @@ function loadChanges() {
 			{#each animeList as anime,animeIndex}
 				<label><input type="radio" name="draft-anime" bind:group={selectedDraft} value={animeIndex} /> {anime["name"]}</label>
 			{/each}
-			<button on:click={draftAnime}>Save this draft</button>
+			<button on:click={draftAnime}>Lock it in!</button>
 		</div>
 	{/if}
 </main>
@@ -221,6 +221,22 @@ function loadChanges() {
 		text-transform: uppercase;
 		font-size: 4em;
 		font-weight: 100;
+		margin: 0.25em;
+	}
+
+	nav {
+		border-top: 1px solid #8C7643;
+		border-bottom: 1px solid #8C7643;
+	}
+
+	nav .nav-button {
+		float: right;
+		margin-left: 1em;
+	}
+
+	input.team-name {
+		background-color: transparent;
+		border: 0px;
 	}
 
 	td.anime-name {
@@ -252,6 +268,12 @@ function loadChanges() {
 
 	.team {
 		flex-grow: 1;
+		padding: 1em;
+		border-top: 1px solid #8C7643;
+	}
+
+	.team-with-border {
+		border-left: 1px solid #8C7643;
 	}
 
 	.draft-list {
