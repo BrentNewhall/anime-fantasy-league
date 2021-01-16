@@ -2,14 +2,13 @@
 import { writable } from "svelte/store";
 
 const store = writable(localStorage.getItem("store") || "");
-
 store.subscribe(val => localStorage.setItem("store", val))
 
 export let targetYear = 2021;
 export let targetSeason = "SPRING";
 export let currDraft = 0;
 export let teams = [];
-export let league_size = 2;
+export let leagueSize = 2;
 
 const avlSeasons = ["WINTER","SPRING","SUMMER","FALL"];
 const avlYears = [2021,2022,2023,2024,2025];
@@ -61,6 +60,10 @@ const options = {
   body: aniListQuery
 };
 
+function sortAnimeList() {
+	animeList = animeList.sort( (a,b) => { return a["name"] < b["name"] ? -1 : 1 } );
+}
+
 function refreshAnilistData() {
 	fetch('https://graphql.anilist.co', getOptionsForSeason(targetYear,targetSeason)).then( r => r.json() ).then( data => {
 		console.log( "Success" );
@@ -80,6 +83,7 @@ function reloadDataFromAnilist() {
 			}
 			animeList.push( { id: element["id"], name, averageScore: element["averageScore"] } )
 		} );
+		sortAnimeList();
 	}).catch( err => {
 		console.error( "No good." );
 	});
@@ -95,7 +99,7 @@ function getOptionsForSeason( year, season ) {
 function setLeagueSize() {
 	const oldTeams = teams;
 	teams = [];
-	for( let i = 0; i < league_size; i++ ) {
+	for( let i = 0; i < leagueSize; i++ ) {
 		if( i < oldTeams.length ) {
 			teams.push( oldTeams[i] );
 		}
@@ -115,7 +119,7 @@ function draftAnime() {
 	teams[currDraft].totalScore += score;
 	animeList.splice( selectedDraft, 1 ); // Remove from anime list
 	currDraft += 1; // Go to next user
-	if( currDraft >= league_size ) {
+	if( currDraft >= leagueSize ) {
 		currDraft = 0;
 	}
 	draftVisible = false;
@@ -128,7 +132,7 @@ function calcScore( team ) {
 }
 
 function saveChanges() {
-	$store = JSON.stringify( { teams, animeList } );
+	$store = JSON.stringify( { leagueSize, currDraft, teams, animeList } );
 }
 
 function showDraft() {
@@ -137,6 +141,8 @@ function showDraft() {
 
 function loadChanges() {
 	const temp = JSON.parse( $store );
+	leagueSize = temp.leagueSize;
+	currDraft = temp.currDraft;
 	teams = temp.teams;
 	animeList = temp.animeList;
 }
@@ -169,7 +175,7 @@ function loadChanges() {
 {#if animeList.length > 0}
 <main>
 	<p>Number of people in your league:</p>
-	<input name="league_size" bind:value={league_size} />
+	<input class="league-size" size="2" bind:value={leagueSize} />
 	<button on:click={setLeagueSize}>Set</button>
 	<div class="teams">
 		{#each teams as team,teamIndex}
@@ -177,7 +183,7 @@ function loadChanges() {
 			<h2><input class="team-name" bind:value={team.name} /></h2>
 			<table>
 			<thead>
-				<tr><th>Anime Title</th><th>Score</th></tr>
+				<tr><th>Anime</th><th>Score</th></tr>
 			</thead>
 			<tbody>
 			{#each team.anime as anime}
@@ -187,7 +193,7 @@ function loadChanges() {
 			</tbody>
 			</table>
 			{#if teamIndex == currDraft}
-				<button on:click={showDraft}>Make a draft</button>
+				<button class="draft-anime-button" on:click={showDraft}>Draft an anime</button>
 			{/if}
 		</div>
 		{/each}
@@ -229,6 +235,11 @@ function loadChanges() {
 		margin: 0.25em;
 	}
 
+	h2 {
+		color: #607AA8;
+		font-size: 2em;
+	}
+
 	nav {
 		border-top: 1px solid #8C7643;
 		border-bottom: 1px solid #8C7643;
@@ -239,9 +250,21 @@ function loadChanges() {
 		margin-left: 1em;
 	}
 
+	input.league-size {
+		text-align: right;
+		width: 2em;
+	}
+
 	input.team-name {
+		color: #607AA8;
 		background-color: transparent;
 		border: 0px;
+	}
+
+	input[type="radio"]:checked+label{ background-color: blue; }
+
+	table {
+		width: 100%;
 	}
 
 	td.anime-name {
@@ -292,6 +315,10 @@ function loadChanges() {
 		border: 1px solid #1D487D;
 		border-radius: 1em;
 		padding: 1em;
+	}
+
+	.draft-anime-button {
+		margin-top: 1em;
 	}
 
 	@media (min-width: 640px) {
