@@ -9,9 +9,15 @@ export let teams = [];
 export let league_size = 2;
 
 function setLeagueSize() {
+	const oldTeams = teams;
 	teams = [];
 	for( let i = 0; i < league_size; i++ ) {
-		teams.push( {name: 'ABC', anime: []} );
+		if( i < oldTeams.length ) {
+			teams.push( oldTeams[i] );
+		}
+		else {
+			teams.push( {name: 'ABC', anime: []} );
+		}
 	}
 	saveChanges();
 }
