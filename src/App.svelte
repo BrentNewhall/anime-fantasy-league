@@ -6,14 +6,14 @@ store.subscribe(val => localStorage.setItem("store", val))
 
 export let targetYear = 2021;
 export let targetSeason = "SPRING";
-export let currDraft = 0;
+export let currDraftTeam = 0;
 export let teams = [];
 export let leagueSize = 2;
 
 const avlSeasons = ["WINTER","SPRING","SUMMER","FALL"];
 const avlYears = [2021,2022,2023,2024,2025];
 
-let selectedDraft = 0;
+let selectedDraftAnime = 0;
 let draftVisible = false;
 
 const teamNames = ["Akari","Akito","Hana","Haru","Hinata","Hiroto","Itsuki","Kaito","Kana","Kei","Koharu","Minato","Ren","Riku","Sana","Tsumugi","Yamato"]
@@ -110,17 +110,17 @@ function setLeagueSize() {
 	saveChanges();
 }
 function draftAnime() {
-	const selectedAnime = animeList[selectedDraft];
+	const selectedAnime = animeList[selectedDraftAnime];
 	let score = parseInt(selectedAnime["averageScore"]);
 	if( isNaN(score) ) {
 		score = 0;
 	}
-	teams[currDraft].anime.push( { id: selectedAnime["id"], name: selectedAnime["name"], score } ); // Add to user's anime
-	teams[currDraft].totalScore += score;
-	animeList.splice( selectedDraft, 1 ); // Remove from anime list
-	currDraft += 1; // Go to next user
-	if( currDraft >= leagueSize ) {
-		currDraft = 0;
+	teams[currDraftTeam].anime.push( { id: selectedAnime["id"], name: selectedAnime["name"], score } ); // Add to user's anime
+	teams[currDraftTeam].totalScore += score;
+	animeList.splice( selectedDraftAnime, 1 ); // Remove from anime list
+	currDraftTeam += 1; // Go to next team
+	if( currDraftTeam >= leagueSize ) {
+		currDraftTeam = 0;
 	}
 	draftVisible = false;
 	teams = teams;
@@ -132,17 +132,18 @@ function calcScore( team ) {
 }
 
 function saveChanges() {
-	$store = JSON.stringify( { leagueSize, currDraft, teams, animeList } );
+	$store = JSON.stringify( { leagueSize, currDraftTeam, teams, animeList } );
 }
 
 function showDraft() {
-	draftVisible = true;	
+	selectedDraftAnime = 0;
+	draftVisible = true;
 }
 
 function loadChanges() {
 	const temp = JSON.parse( $store );
 	leagueSize = temp.leagueSize;
-	currDraft = temp.currDraft;
+	currDraftTeam = temp.currDraftTeam;
 	teams = temp.teams;
 	animeList = temp.animeList;
 }
@@ -192,7 +193,7 @@ function loadChanges() {
 			<tr><td class="total">Total:</td><td class="score total">{team.totalScore}</td></tr>
 			</tbody>
 			</table>
-			{#if teamIndex == currDraft}
+			{#if teamIndex === currDraftTeam}
 				<button class="draft-anime-button" on:click={showDraft}>Draft an anime</button>
 			{/if}
 		</div>
@@ -200,9 +201,9 @@ function loadChanges() {
 	</div>
 	{#if draftVisible}
 		<div class="draft-list">
-			<h2>Draft for {teams[currDraft].name}</h2>
+			<h2>Draft for {teams[currDraftTeam].name}</h2>
 			{#each animeList as anime,animeIndex}
-				<label><input type="radio" name="draft-anime" bind:group={selectedDraft} value={animeIndex} /> {anime["name"]}</label>
+				<label><input type="radio" name="draft-anime" bind:group={selectedDraftAnime} value={animeIndex} /> {anime["name"]}</label>
 			{/each}
 			<button on:click={draftAnime}>Lock it in!</button>
 		</div>
