@@ -8,6 +8,8 @@ store.subscribe(val => localStorage.setItem("store", val))
 export let teams = [];
 export let league_size = 2;
 
+const teamNames = ["Akari","Akito","Hana","Haru","Hinata","Hiroto","Itsuki","Kaito","Kana","Kei","Koharu","Minato","Ren","Riku","Sana","Tsumugi","Yamato"]
+
 function setLeagueSize() {
 	const oldTeams = teams;
 	teams = [];
@@ -16,7 +18,7 @@ function setLeagueSize() {
 			teams.push( oldTeams[i] );
 		}
 		else {
-			teams.push( {name: 'ABC', anime: []} );
+			teams.push( {name: teamNames[Math.floor(Math.random() * teamNames.length)], anime: []} );
 		}
 	}
 	saveChanges();
