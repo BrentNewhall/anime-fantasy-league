@@ -14,31 +14,31 @@ let draftVisible = false;
 
 const teamNames = ["Akari","Akito","Hana","Haru","Hinata","Hiroto","Itsuki","Kaito","Kana","Kei","Koharu","Minato","Ren","Riku","Sana","Tsumugi","Yamato"]
 let animeList = [
-"So I'm a Spider, So What? [Kumo desu ga, Nani ka?]",
-"LAID-BACK CAMP SEASON2 [Yuru Camp SEASON 2]",
-"EX-ARM [EX-ARM]",
-"Mushoku Tensei: Jobless Reincarnation [Mushoku Tensei: Isekai Ittara Honki Dasu]",
-"That Time I Got Reincarnated as a Slime Season 2 [Tensei Shitara Slime Datta Ken 2nd Season]",
-"Cells at Work!! [Hataraku Saibou!!]",
-"The Promised Neverland Season 2 [Yakusoku no Neverland 2]",
-"ICHU [ICHU: HALFWAY THROUGH THE IDOL]",
-"The Quintessential Quintuplets 2 [5-Toubun no Hanayome ]",
-"Non Non Biyori Nonstop [Non Non Biyori: Nonstop]",
-"Attack on Titan Final Season [Shingeki no Kyojin: The Final Season]",
-"Bottom-Tier Character Tomozaki [Jaku-Chara Tomozaki-kun]",
-"Suppose a Kid from the Last Dungeon Boonies moved to a starter town? [Tatoeba Last Dungeon Mae no Mura no Shounen ga Joban no Machi de Kurasu Youna Monogatari]",
 "2.43: Seiin High School Boys Volleyball Team [2.43: Seiin Koukou Danshi Volley-bu]",
+"Attack on Titan Final Season [Shingeki no Kyojin: The Final Season]",
+"BACK ARROW [Back Arrow]",
+"BEASTARS Season 2 [BEASTARS 2]",
+"Bottom-Tier Character Tomozaki [Jaku-Chara Tomozaki-kun]",
+"Cells at Work!! [Hataraku Saibou!!]",
+"Dr. STONE: STONE WARS [Dr. STONE: STONE WARS]",
+"EX-ARM [EX-ARM]",
+"Hortensia SAGA [Hortensia Saga]",
+"ICHU [ICHU: HALFWAY THROUGH THE IDOL]",
+"Idoly Pride [IDOLY PRIDE]",
+"Kemono Jihen [Kemono Jihen]",
+"LAID-BACK CAMP SEASON2 [Yuru Camp SEASON 2]",
+"Mushoku Tensei: Jobless Reincarnation [Mushoku Tensei: Isekai Ittara Honki Dasu]",
+"Non Non Biyori Nonstop [Non Non Biyori: Nonstop]",
 "Redo of Healer [Kaifuku Jutsushi no Yarinaoshi]",
 "Show by Rock!! Stars!! [SHOW BY ROCK!! STARS!!]",
 "Skate-Leading Stars [Skate-LeadingStars]",
-"Idoly Pride [IDOLY PRIDE]",
-"Dr. STONE: STONE WARS [Dr. STONE: STONE WARS]",
-"Kemono Jihen [Kemono Jihen]",
+"So I'm a Spider, So What? [Kumo desu ga, Nani ka?]",
+"Suppose a Kid from the Last Dungeon Boonies moved to a starter town? [Tatoeba Last Dungeon Mae no Mura no Shounen ga Joban no Machi de Kurasu Youna Monogatari]",
+"That Time I Got Reincarnated as a Slime Season 2 [Tensei Shitara Slime Datta Ken 2nd Season]",
+"The Promised Neverland Season 2 [Yakusoku no Neverland 2]",
+"The Quintessential Quintuplets 2 [5-Toubun no Hanayome ]",
 "World Trigger 2nd Season [World Trigger 2]",
-"BEASTARS Season 2 [BEASTARS 2]",
-"Hortensia SAGA [Hortensia Saga]",
 "True Cooking Master Boy Season 2 [Shin Chuuka Ichiban! 2]",
-"BACK ARROW [Back Arrow]",
 "Log Horizon: Destruction of the Round Table [Log Horizon: Entaku Houkai]",
 "Otherside Picnic [Ura Sekai Picnic]",
 "The Seven Deadly Sins: Dragon's Judgment [Nanatsu no Taizai: Fundo no Shinpan]",
@@ -58,6 +58,56 @@ let animeList = [
 "WONDER EGG PRIORITY [Wonder Egg Priority]"
 ];
 
+const aniListQuery = JSON.stringify({
+	query: `{
+		Page {
+			pageInfo {
+				total
+				currentPage
+				lastPage
+				hasNextPage
+				perPage
+			}
+			media (season: WINTER, seasonYear: 2021, type: ANIME, format: TV) {
+				id
+				startDate { year, month, day }
+				format
+				title {
+					romaji
+					english
+				}
+				source
+				genres
+				episodes
+				duration
+				averageScore
+				meanScore
+				popularity
+				}
+			}
+		}
+	`
+});
+
+const options = {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Content-Length': aniListQuery.length,
+    'User-Agent': 'Node',
+  },
+  body: aniListQuery
+};
+
+async function fetchDataFromAnilist() {
+	fetch('https://graphql.anilist.co', options).then( r => r.json() ).then( data => {
+		console.log( "Success" );
+		console.log( data.data.Page.media );
+	}).catch( err => {
+		console.error( "No good." );
+	});
+}
+
 function setLeagueSize() {
 	const oldTeams = teams;
 	teams = [];
@@ -66,16 +116,16 @@ function setLeagueSize() {
 			teams.push( oldTeams[i] );
 		}
 		else {
-			teams.push( {name: teamNames[Math.floor(Math.random() * teamNames.length)], anime: []} );
+			teams.push( {name: teamNames[Math.floor(Math.random() * teamNames.length)], anime: [], totalScore: 0} );
 		}
 	}
 	saveChanges();
 }
 function draftAnime() {
-	console.log( selectedDraft );
 	const selectedAnime = animeList[selectedDraft];
-	console.log( selectedAnime );
-	teams[currDraft].anime.push( { name: selectedAnime, score: 0 } ); // Add to user's anime
+	const score = Math.floor(Math.random() * 100);
+	teams[currDraft].anime.push( { name: selectedAnime, score } ); // Add to user's anime
+	teams[currDraft].totalScore += score;
 	animeList.splice( selectedDraft, 1 ); // Remove from anime list
 	currDraft += 1; // Go to next user
 	if( currDraft >= league_size ) {
@@ -83,6 +133,11 @@ function draftAnime() {
 	}
 	draftVisible = false;
 	teams = teams;
+}
+
+function calcScore( team ) {
+	console.log( teams[team].anime );
+	//return teams[team].anime.reduce( (a,c) => a + c.score );
 }
 
 function saveChanges() {
@@ -105,6 +160,7 @@ function loadChanges() {
 	<h1>Anime Fantasy League</h1>
 	<button on:click={saveChanges}>Save</button>
 	<button on:click={loadChanges}>Load</button>
+	<button on:click={fetchDataFromAnilist}>Fetch data from AniList</button>
 </nav>
 
 <main>
@@ -115,11 +171,17 @@ function loadChanges() {
 		{#each teams as team,teamIndex}
 		<div class="team">
 			<h2><input bind:value={team.name} /></h2>
-			<table><tbody>
+			<table>
+			<thead>
+				<tr><th>Anime Title</th><th>Score</th></tr>
+			</thead>
+			<tbody>
 			{#each team.anime as anime}
 				<tr><td>{anime.name}</td><td>{anime.score}</td></tr>
 			{/each}
-			</tbody></table>
+			<tr><td><em>Total:</em></td><td>{team.totalScore}</td></tr>
+			</tbody>
+			</table>
 			{#if teamIndex == currDraft}
 				<button on:click={showDraft}>Make a draft</button>
 			{/if}
