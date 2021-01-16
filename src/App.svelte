@@ -9,6 +9,7 @@ export let teams = [];
 export let league_size = 2;
 
 const teamNames = ["Akari","Akito","Hana","Haru","Hinata","Hiroto","Itsuki","Kaito","Kana","Kei","Koharu","Minato","Ren","Riku","Sana","Tsumugi","Yamato"]
+let animeList = [];
 
 function setLeagueSize() {
 	const oldTeams = teams;
@@ -23,14 +24,18 @@ function setLeagueSize() {
 	}
 	saveChanges();
 }
+function draftAnime() {
+
+}
 
 function saveChanges() {
-	$store = JSON.stringify( teams );
-	console.log( $store );
+	$store = JSON.stringify( { teams, animeList } );
 }
+
 function loadChanges() {
-	teams = JSON.parse( $store );
-	console.log( $store );
+	const temp = JSON.parse( $store );
+	teams = temp.teams;
+	animeList = temp.animeList;
 }
 /* ----- END SCRIPT ----- */
 </script>
@@ -49,6 +54,12 @@ function loadChanges() {
 		{#each teams as team}
 		<div class="team">
 			<h2><input bind:value={team.name} /></h2>
+			<table><tbody>
+			{#each team.anime as anime}
+				<tr><td>{anime.name}</td><td>{anime.score}</td></tr>
+			{/each}
+			</tbody></table>
+			<button>Make a draft</button>
 		</div>
 		{/each}
 	</div>
