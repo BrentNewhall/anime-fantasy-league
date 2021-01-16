@@ -99,13 +99,31 @@ const options = {
   body: aniListQuery
 };
 
-async function fetchDataFromAnilist() {
-	fetch('https://graphql.anilist.co', options).then( r => r.json() ).then( data => {
+function refreshAnilistData() {
+	fetch('https://graphql.anilist.co', getOptionsForSeason(2021,"WINTER")).then( r => r.json() ).then( data => {
 		console.log( "Success" );
 		console.log( data.data.Page.media );
 	}).catch( err => {
 		console.error( "No good." );
 	});
+}
+
+function reloadDataFromAnilist() {
+	fetch('https://graphql.anilist.co', getOptionsForSeason(2021,"WINTER")).then( r => r.json() ).then( data => {
+		console.log( "Success" );
+		console.log( data.data.Page.media );
+		animeList = [];
+		data.data.Page.media.forEach( element => { animeList.push( element["title"]["english"] ) } );
+	}).catch( err => {
+		console.error( "No good." );
+	});
+}
+
+function getOptionsForSeason( year, season ) {
+	let myOptions = options;
+	myOptions.body = myOptions.body.replace( "2021", year );
+	myOptions.body = myOptions.body.replace( "WINTER", season );
+	return myOptions;
 }
 
 function setLeagueSize() {
@@ -160,7 +178,7 @@ function loadChanges() {
 	<h1>Anime Fantasy League</h1>
 	<button on:click={saveChanges}>Save</button>
 	<button on:click={loadChanges}>Load</button>
-	<button on:click={fetchDataFromAnilist}>Fetch data from AniList</button>
+	<button on:click={reloadDataFromAnilist}>Fetch data from AniList</button>
 </nav>
 
 <main>
