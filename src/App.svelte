@@ -109,13 +109,14 @@ function setLeagueSize() {
 	}
 	saveChanges();
 }
+
 function draftAnime() {
 	const selectedAnime = animeList[selectedDraftAnime];
 	let score = parseInt(selectedAnime["averageScore"]);
 	if( isNaN(score) ) {
 		score = 0;
 	}
-	teams[currDraftTeam].anime.push( { id: selectedAnime["id"], name: selectedAnime["name"], score } ); // Add to user's anime
+	teams[currDraftTeam].anime.push( { id: selectedAnime["id"], name: selectedAnime["name"], score } ); // Add to team's anime
 	teams[currDraftTeam].totalScore += score;
 	animeList.splice( selectedDraftAnime, 1 ); // Remove from anime list
 	currDraftTeam += 1; // Go to next team
@@ -124,11 +125,6 @@ function draftAnime() {
 	}
 	draftVisible = false;
 	teams = teams;
-}
-
-function calcScore( team ) {
-	console.log( teams[team].anime );
-	//return teams[team].anime.reduce( (a,c) => a + c.score );
 }
 
 function saveChanges() {
@@ -219,7 +215,7 @@ function loadChanges() {
 /* Palette: https://www.colourlovers.com/palette/4780148/Palette_for_2021 */
 	
 	main {
-		padding: 1em;
+		padding: 1em 0em;
 		max-width: 240px;
 		margin: 0 auto;
 	}
@@ -245,7 +241,6 @@ function loadChanges() {
 	}
 
 	nav {
-		border-top: 1px solid #8C7643;
 		border-bottom: 1px solid #8C7643;
 	}
 
