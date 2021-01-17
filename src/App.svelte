@@ -175,9 +175,11 @@ function loadChanges() {
 
 {#if animeList.length > 0}
 <main>
-	<p>Number of people in your league:</p>
+	<div class="league-size-container">
+	<div>Number of people in your league:</div>
 	<input class="league-size" size="2" bind:value={leagueSize} />
 	<button on:click={setLeagueSize}>Set</button>
+	</div>
 	<div class="teams">
 		{#each teams as team,teamIndex}
 		<div class="team {teamIndex > 0 ? "team-with-border" : ""}">
@@ -255,6 +257,8 @@ function loadChanges() {
 	input.league-size {
 		text-align: right;
 		width: 2em;
+		margin-left: 1em;
+		margin-right: 1em;
 	}
 
 	input.team-name {
@@ -292,6 +296,12 @@ function loadChanges() {
 
 	.load-bar-item {
 		margin-right: 1em;
+	}
+
+	.league-size-container {
+		display: flex;
+		flex-direction: row;
+		justify-content: flex-start;
 	}
 
 	.teams {
