@@ -98,6 +98,18 @@ function getOptionsForSeason( year, season ) {
 	return myOptions;
 }
 
+function nameTaken( teams, name ) {
+	return (teams.filter( team => team["name"] === name )).length > 0;
+}
+
+function getNewName(teamNames, teams) {
+	let name = teamNames[Math.floor(Math.random() * teamNames.length)];
+	while( nameTaken( teams, name ) ) {
+		name = teamNames[Math.floor(Math.random() * teamNames.length)];
+	}
+	return name;
+}
+
 function setLeagueSize() {
 	const oldTeams = teams;
 	teams = [];
@@ -106,7 +118,7 @@ function setLeagueSize() {
 			teams.push( oldTeams[i] );
 		}
 		else {
-			teams.push( {name: teamNames[Math.floor(Math.random() * teamNames.length)], anime: [], totalScore: 0} );
+			teams.push( {name: getNewName( teamNames, teams ), anime: [], totalScore: 0} );
 		}
 	}
 	saveChanges();
