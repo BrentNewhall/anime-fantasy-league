@@ -44,6 +44,7 @@ const aniListQuery = JSON.stringify({
 				averageScore
 				meanScore
 				popularity
+				coverImage { medium }
 				}
 			}
 		}
@@ -81,7 +82,8 @@ function reloadDataFromAnilist() {
 			if( name === null ) {
 				name = element["title"]["romaji"];
 			}
-			animeList.push( { id: element["id"], name, averageScore: element["averageScore"] } )
+			animeList.push( { id: element["id"], name, averageScore: element["averageScore"], image: element["coverImage"]["medium"] } )
+			console.log( element["coverImage"]["large"] );
 		} );
 		sortAnimeList();
 	}).catch( err => {
@@ -200,9 +202,11 @@ function loadChanges() {
 	{#if draftVisible}
 		<div class="draft-list">
 			<h2>Draft for {teams[currDraftTeam].name}</h2>
+			<div class="anime-draft-list">
 			{#each animeList as anime,animeIndex}
-				<label><input type="radio" name="draft-anime" bind:group={selectedDraftAnime} value={animeIndex} /> {anime["name"]}</label>
+				<label style="background-image: url({anime["image"]})" class="draft"><input type="radio" name="draft-anime" bind:group={selectedDraftAnime} value={animeIndex} style="vertical-align:top" /> <span style="vertical-align:top">{anime["name"]}</span></label>
 			{/each}
+			</div>
 			<button on:click={draftAnime}>Lock it in!</button>
 		</div>
 	{/if}
@@ -283,6 +287,14 @@ function loadChanges() {
 		background-color: #f3efe8;
 	}
 
+	label.draft {
+		flex-grow: 1;
+		width: 33%;
+		background-repeat: no-repeat;
+		height: 142px;
+		padding-left: 105px;
+	}
+
 	.load-bar {
 		display: flex;
 		flex-direction: row;
@@ -325,6 +337,12 @@ function loadChanges() {
 		border: 1px solid #1D487D;
 		border-radius: 1em;
 		padding: 1em;
+		vertical-align: top;
+	}
+
+	.anime-draft-list {
+		display: flex;
+		flex-wrap: wrap;
 	}
 
 	.draft-anime-button {
