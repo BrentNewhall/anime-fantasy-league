@@ -190,7 +190,7 @@ function loadChanges() {
 	<div>Number of people in your league:</div>
 	<input class="league-size" size="2" bind:value={leagueSize} />
 	<button on:click={setLeagueSize}>Set</button>
-	<button on:click={showDisqualify} style="margin-left: 2em">Disqualify</button>
+	<button on:click={showDisqualify} class="btn-disqualify">Disqualify</button>
 	</div>
 	<div class="teams">
 		{#each teams as team,teamIndex}
@@ -328,6 +328,12 @@ function loadChanges() {
 
 	.load-bar-item {
 		margin-right: 1em;
+	}
+
+	.btn-disqualify {
+		margin-left: 2em;
+		color: white;
+		background-color: #8C7643;
 	}
 
 	.league-size-container {
