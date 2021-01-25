@@ -15,6 +15,7 @@ const avlYears = [2021,2022,2023,2024,2025];
 
 let selectedDraftAnime = 0;
 let draftVisible = false;
+let disqualifyVisible = false;
 
 const teamNames = ["Akari","Akito","Hana","Haru","Hinata","Hiroto","Itsuki","Kaito","Kana","Kei","Koharu","Minato","Ren","Riku","Sana","Tsumugi","Yamato"]
 let animeList = [];
@@ -83,7 +84,6 @@ function reloadDataFromAnilist() {
 				name = element["title"]["romaji"];
 			}
 			animeList.push( { id: element["id"], name, averageScore: element["averageScore"], image: element["coverImage"]["medium"] } )
-			console.log( element["coverImage"]["large"] );
 		} );
 		sortAnimeList();
 	}).catch( err => {
@@ -138,6 +138,19 @@ function showDraft() {
 	draftVisible = true;
 }
 
+function showDisqualify() {
+	disqualifyVisible = true;
+}
+
+function doneDisqualifying() {
+	for( let i = animeList.length - 1; i >= 0; i-- ) {
+		if( document.getElementById("disqualify-anime-" + i).checked ) {
+			animeList.splice( i, 1 );
+		}
+	}
+	disqualifyVisible = false;
+}
+
 function loadChanges() {
 	const temp = JSON.parse( $store );
 	leagueSize = temp.leagueSize;
@@ -177,6 +190,7 @@ function loadChanges() {
 	<div>Number of people in your league:</div>
 	<input class="league-size" size="2" bind:value={leagueSize} />
 	<button on:click={setLeagueSize}>Set</button>
+	<button on:click={showDisqualify} style="margin-left: 2em">Disqualify</button>
 	</div>
 	<div class="teams">
 		{#each teams as team,teamIndex}
@@ -208,6 +222,17 @@ function loadChanges() {
 			{/each}
 			</div>
 			<button on:click={draftAnime}>Lock it in!</button>
+		</div>
+	{/if}
+	{#if disqualifyVisible}
+		<div class="draft-list">
+			<h2>Disqualify These Anime</h2>
+			<div class="anime-draft-list">
+			{#each animeList as anime,animeIndex}
+				<label style="background-image: url({anime["image"]})" class="draft"><input type="checkbox" id="disqualify-anime-{animeIndex}" style="vertical-align:top" /> <span style="vertical-align:top">{anime["name"]}</span></label>
+			{/each}
+			</div>
+			<button on:click={doneDisqualifying}>Done</button>
 		</div>
 	{/if}
 </main>
