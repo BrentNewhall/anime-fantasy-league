@@ -16,6 +16,8 @@ const avlYears = [2021,2022,2023,2024,2025];
 let selectedDraftAnime = 0;
 let draftVisible = false;
 let disqualifyVisible = false;
+let nextTeamRandom = false;
+let teamsChosen = [];
 
 const teamNames = ["Akari","Akito","Hana","Haru","Hinata","Hiroto","Itsuki","Kaito","Kana","Kei","Koharu","Minato","Ren","Riku","Sana","Tsumugi","Yamato"]
 let animeList = [];
@@ -133,12 +135,44 @@ function draftAnime() {
 	teams[currDraftTeam].anime.push( { id: selectedAnime["id"], name: selectedAnime["name"], score } ); // Add to team's anime
 	teams[currDraftTeam].totalScore += score;
 	animeList.splice( selectedDraftAnime, 1 ); // Remove from anime list
-	currDraftTeam += 1; // Go to next team
-	if( currDraftTeam >= leagueSize ) {
-		currDraftTeam = 0;
+	if( nextTeamRandom ) {
+		saveTeamChosen();
+		nextRandomTeam();
+	}
+	else {
+		currDraftTeam += 1; // Go to next team
+		if( currDraftTeam >= leagueSize ) {
+			currDraftTeam = 0;
+		}
 	}
 	draftVisible = false;
 	teams = teams;
+}
+
+function saveTeamChosen() {
+	teamsChosen.push( currDraftTeam );
+	if( teamsChosen.length > teams.length * 2 ) {
+		teamsChosen.shift();
+	}
+	console.log( teamsChosen );
+}
+
+function nextRandomTeam() {
+	let forceTeam = false;
+	for( let team = 0; team < teams.length; team++ ) {
+		if( ! teamsChosen.includes( team ) ) {
+			currDraftTeam = team;
+			forceTeam = true;
+			break;
+		}
+	}
+	if( ! forceTeam ) {
+		let t = currDraftTeam;
+		while( t === currDraftTeam ) {
+			t = Math.floor(Math.random() * teams.length);
+		}
+		currDraftTeam = t;
+	}
 }
 
 function saveChanges() {
@@ -161,6 +195,10 @@ function doneDisqualifying() {
 		}
 	}
 	disqualifyVisible = false;
+}
+
+function toggleNextTeamRandom() {
+	nextTeamRandom = document.getElementById("next-team-random").checked;
 }
 
 function loadChanges() {
@@ -202,6 +240,9 @@ function loadChanges() {
 	<div>Number of people in your league:</div>
 	<input class="league-size" size="2" bind:value={leagueSize} />
 	<button on:click={setLeagueSize}>Set</button>
+	<label class="next-team-random">
+		<input type="checkbox" id="next-team-random" on:click={toggleNextTeamRandom} /> Randomize draft order
+	</label>
 	<button on:click={showDisqualify} class="btn-disqualify">Disqualify</button>
 	</div>
 	<div class="teams">
@@ -330,6 +371,10 @@ function loadChanges() {
 		background-repeat: no-repeat;
 		height: 142px;
 		padding-left: 105px;
+	}
+
+	label.next-team-random {
+		margin-left: 1em;
 	}
 
 	.load-bar {
