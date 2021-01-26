@@ -17,6 +17,7 @@ let selectedDraftAnime = 0;
 let draftVisible = false;
 let disqualifyVisible = false;
 let nextTeamRandom = false;
+let nextTeamRandomAvailable = false;
 let teamsChosen = [];
 
 const teamNames = ["Akari","Akito","Hana","Haru","Hinata","Hiroto","Itsuki","Kaito","Kana","Kei","Koharu","Minato","Ren","Riku","Sana","Tsumugi","Yamato"]
@@ -122,6 +123,12 @@ function setLeagueSize() {
 		else {
 			teams.push( {name: getNewName( teamNames, teams ), anime: [], totalScore: 0} );
 		}
+	}
+	if( teams.length > 2 ) {
+		nextTeamRandomAvailable = true;
+	}
+	else {
+		nextTeamRandomAvailable = false;
 	}
 	saveChanges();
 }
@@ -241,7 +248,7 @@ function loadChanges() {
 	<input class="league-size" size="2" bind:value={leagueSize} />
 	<button on:click={setLeagueSize}>Set</button>
 	<label class="next-team-random">
-		<input type="checkbox" id="next-team-random" on:click={toggleNextTeamRandom} /> Randomize draft order
+		<input type="checkbox" disabled={nextTeamRandomAvailable ? "" : "disabled"} id="next-team-random" on:click={toggleNextTeamRandom} /> <span class={nextTeamRandomAvailable ? "" : "next-team-random-disabled"}>Randomize draft order</span>
 	</label>
 	<button on:click={showDisqualify} class="btn-disqualify">Disqualify</button>
 	</div>
@@ -375,6 +382,10 @@ function loadChanges() {
 
 	label.next-team-random {
 		margin-left: 1em;
+	}
+
+	.next-team-random-disabled {
+		color: gray;
 	}
 
 	.load-bar {
