@@ -458,16 +458,6 @@ function doneRandomStartTeam() {
 		color: gray;
 	}
 
-	.load-bar {
-		display: flex;
-		flex-direction: row;
-		justify-content: flex-start;
-	}
-
-	.load-bar-item {
-		margin-right: 1em;
-	}
-
 	.btn-disqualify {
 		margin-left: 2em;
 		color: white;
