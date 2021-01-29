@@ -1,6 +1,28 @@
 <script>
 import { writable } from "svelte/store";
 
+// import * as AWS from 'aws-sdk';
+// export const dbConfig = {
+//   region: 'us-east-1',
+//   endpoint: 'dynamodb.us-east-1.amazonaws.com',
+//   accessKeyId: 'keyid',
+//   secretAccessKey: 'accesskey',
+// }
+// export const tableName = "mini-db-test";
+// AWS.config.update( dbConfig );
+// const dynamodb = new AWS.DynamoDB();
+// const docClient = new AWS.DynamoDB.DocumentClient();
+// const params = {
+//     TableName: tableName,
+// }
+// docClient.scan( params, (err, data) => {
+// 	if( data !== null ) {
+// 		const items = data.Items;
+// 		console.log( items );
+// 	}
+// });
+
+// Use LocalStorage
 const store = writable(localStorage.getItem("store") || "");
 store.subscribe(val => localStorage.setItem("store", val))
 
@@ -14,6 +36,7 @@ const avlSeasons = ["WINTER","SPRING","SUMMER","FALL"];
 const avlYears = [2021,2022,2023,2024,2025];
 
 let selectedDraftAnime = 0;
+let fetchDataVisible = true;
 let draftVisible = false;
 let disqualifyVisible = false;
 let nextTeamRandom = false;
@@ -89,6 +112,7 @@ function reloadDataFromAnilist() {
 			animeList.push( { id: element["id"], name, averageScore: element["averageScore"], image: element["coverImage"]["medium"] } )
 		} );
 		sortAnimeList();
+		fetchDataVisible = false;
 	}).catch( err => {
 		console.error( "No good." );
 	});
@@ -186,6 +210,10 @@ function saveChanges() {
 	$store = JSON.stringify( { leagueSize, currDraftTeam, teams, animeList } );
 }
 
+function showFetchDataPanel() {
+	fetchDataVisible = true;
+}
+
 function showDraft() {
 	selectedDraftAnime = 0;
 	draftVisible = true;
@@ -219,26 +247,10 @@ function loadChanges() {
 </script>
 
 <nav>
-	<h1>Anime Fantasy League</h1>
-	<button class="nav-button" on:click={loadChanges}>Load</button>
 	<button class="nav-button" on:click={saveChanges}>Save</button>
-	<div class="load-bar">
-	<label class="load-bar-item">Season:
-		<select bind:value={targetSeason}>
-			{#each avlSeasons as season}
-			<option value={season}>{season}</option>
-			{/each}
-		</select>
-	</label>
-	<label class="load-bar-item">Year:
-		<select bind:value={targetYear}>
-			{#each avlYears as year}
-			<option value={year}>{year}</option>
-			{/each}
-		</select>
-	</label>
-	<div class="load-bar-item"><button on:click={reloadDataFromAnilist}>Fetch data from AniList</button></div>
-	</div>
+	<button class="nav-button" on:click={loadChanges}>Load</button>
+	<button class="nav-button" on:click={showFetchDataPanel}>Fetch</button>
+	<h1>Anime Fantasy League</h1>
 </nav>
 
 {#if animeList.length > 0}
@@ -298,6 +310,27 @@ function loadChanges() {
 </main>
 {/if}
 
+	{#if fetchDataVisible}
+		<div class="load-screen">
+		<h2>Load Data For When?</h2>
+		<label>Season:
+			<select bind:value={targetSeason}>
+				{#each avlSeasons as season}
+				<option value={season}>{season}</option>
+				{/each}
+			</select>
+		</label>
+		<label>Year:
+			<select bind:value={targetYear}>
+				{#each avlYears as year}
+				<option value={year}>{year}</option>
+				{/each}
+			</select>
+		</label>
+		<button on:click={reloadDataFromAnilist}>Fetch data from AniList</button>
+		</div>
+	{/if}
+
 <style>
 /* ----- END HTML ----- */
 
@@ -315,10 +348,9 @@ function loadChanges() {
 	}
 
 	h1 {
-		text-align: center;
-		color: #607AA8;
-		text-transform: uppercase;
-		font-size: 4em;
+		text-align: left;
+		text-transform: capitalize;
+		font-size: 3em;
 		font-weight: 100;
 		margin: 0.25em;
 	}
@@ -330,12 +362,18 @@ function loadChanges() {
 	}
 
 	nav {
+		color: white;
+		background-color: #1D487D;
 		border-bottom: 1px solid #8C7643;
+		border-top-left-radius: 1em;
+		border-top-right-radius: 1em;
 	}
 
 	nav .nav-button {
 		float: right;
-		margin-left: 1em;
+		margin-left: 0.5em;
+		margin-top: 1em;
+		margin-right: 1em;
 	}
 
 	input.league-size {
@@ -374,7 +412,7 @@ function loadChanges() {
 
 	label.draft {
 		flex-grow: 1;
-		width: 33%;
+		width: 25%;
 		background-repeat: no-repeat;
 		height: 142px;
 		padding-left: 105px;
@@ -423,6 +461,29 @@ function loadChanges() {
 
 	.team-with-border {
 		border-left: 1px solid #8C7643;
+	}
+
+	.load-screen {
+		position: absolute;
+		left: 5em;
+		top: 5em;
+		right: 5em;
+		bottom: 5em;
+		overflow-y: scroll;
+		background-color: #FFFBF2;
+		border: 1px solid #1D487D;
+		border-radius: 1em;
+		padding: 1em;
+		vertical-align: top;
+		text-align: center;
+	}
+
+	.load-screen label {
+		text-align: center;
+	}
+
+	.load-screen button {
+		text-align: center;
 	}
 
 	.draft-list {
