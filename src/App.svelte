@@ -316,7 +316,7 @@ function doneRandomStartTeam() {
 				<label style="background-image: url({anime["image"]})" class="draft"><input type="radio" name="draft-anime" bind:group={selectedDraftAnime} value={animeIndex} style="vertical-align:top" /> <span style="vertical-align:top">{anime["name"]}</span></label>
 			{/each}
 			</div>
-			<button on:click={draftAnime}>Lock it in!</button>
+			<center><button on:click={draftAnime}>Lock it in!</button></center>
 		</div>
 	{/if}
 	{#if disqualifyVisible}
@@ -327,7 +327,7 @@ function doneRandomStartTeam() {
 				<label style="background-image: url({anime["image"]})" class="draft"><input type="checkbox" id="disqualify-anime-{animeIndex}" style="vertical-align:top" /> <span style="vertical-align:top">{anime["name"]}</span></label>
 			{/each}
 			</div>
-			<button on:click={doneDisqualifying}>Done</button>
+			<center><button on:click={doneDisqualifying}>Done</button></center>
 		</div>
 	{/if}
 </main>
@@ -522,6 +522,10 @@ function doneRandomStartTeam() {
 		vertical-align: top;
 	}
 
+	.draft-list button {
+		margin-top: 2em;
+	}
+
 	.anime-draft-list {
 		display: flex;
 		flex-wrap: wrap;
@@ -534,6 +538,7 @@ function doneRandomStartTeam() {
 
 	#spinner {
 		margin: 2em;
+		padding: 2em;
 		font-size: 200%;
 		border: 1px solid #1D487D;
 	}
