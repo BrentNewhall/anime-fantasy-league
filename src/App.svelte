@@ -41,6 +41,7 @@ let draftVisible = false;
 let disqualifyVisible = false;
 let nextTeamRandom = false;
 let nextTeamRandomAvailable = false;
+let randomStartTeamVisible = false;
 let teamsChosen = [];
 
 const teamNames = ["Akari","Akito","Hana","Haru","Hinata","Hiroto","Itsuki","Kaito","Kana","Kei","Koharu","Minato","Ren","Riku","Sana","Tsumugi","Yamato"]
@@ -243,6 +244,27 @@ function loadChanges() {
 	teams = temp.teams;
 	animeList = temp.animeList;
 }
+
+function spin( delay, leagueSize, teams ) {
+	const tempNum = Math.floor(Math.random() * leagueSize);
+	document.getElementById("spinner").textContent = teams[tempNum]["name"];
+	if( delay >= 500 ) {
+		currDraftTeam = tempNum;
+		document.getElementById("spinner").style.fontWeight = "bold";
+	}
+	else {
+    	setTimeout( () => spin( delay * 1.05, leagueSize, teams ), delay );
+	}
+}
+
+function startSpin() {
+	randomStartTeamVisible = true;
+	setTimeout( () => spin( 50, leagueSize, teams ), 100 );
+}
+
+function doneRandomStartTeam() {
+	randomStartTeamVisible = false;
+}
 /* ----- END SCRIPT ----- */
 </script>
 
@@ -262,6 +284,7 @@ function loadChanges() {
 	<label class="next-team-random">
 		<input type="checkbox" disabled={nextTeamRandomAvailable ? "" : "disabled"} id="next-team-random" on:click={toggleNextTeamRandom} /> <span class={nextTeamRandomAvailable ? "" : "next-team-random-disabled"}>Randomize draft order</span>
 	</label>
+	{#if teams.length > 0}<button on:click={startSpin} class="btn-disqualify">New start team</button>{/if}
 	<button on:click={showDisqualify} class="btn-disqualify">Disqualify</button>
 	</div>
 	<div class="teams">
@@ -310,26 +333,35 @@ function loadChanges() {
 </main>
 {/if}
 
-	{#if fetchDataVisible}
-		<div class="load-screen">
-		<h2>Load Data For When?</h2>
-		<label>Season:
-			<select bind:value={targetSeason}>
-				{#each avlSeasons as season}
-				<option value={season}>{season}</option>
-				{/each}
-			</select>
-		</label>
-		<label>Year:
-			<select bind:value={targetYear}>
-				{#each avlYears as year}
-				<option value={year}>{year}</option>
-				{/each}
-			</select>
-		</label>
-		<button on:click={reloadDataFromAnilist}>Fetch data from AniList</button>
-		</div>
-	{/if}
+{#if fetchDataVisible}
+	<div class="load-screen">
+	<h2>Load Data For When?</h2>
+	<label>Season:
+		<select bind:value={targetSeason}>
+			{#each avlSeasons as season}
+			<option value={season}>{season}</option>
+			{/each}
+		</select>
+	</label>
+	<label>Year:
+		<select bind:value={targetYear}>
+			{#each avlYears as year}
+			<option value={year}>{year}</option>
+			{/each}
+		</select>
+	</label>
+	<button on:click={reloadDataFromAnilist}>Fetch data from AniList</button>
+	</div>
+{/if}
+
+{#if randomStartTeamVisible}
+<div class="load-screen">
+	
+	<div id="spinner">
+	</div>
+	<button on:click={doneRandomStartTeam}>Done</button>
+</div>
+{/if}
 
 <style>
 /* ----- END HTML ----- */
@@ -357,7 +389,7 @@ function loadChanges() {
 
 	h2 {
 		text-align: center;
-		color: #607AA8;
+		color: #dee7f7;
 		font-size: 2em;
 	}
 
@@ -507,6 +539,13 @@ function loadChanges() {
 
 	.draft-anime-button {
 		margin-top: 1em;
+	}
+
+
+	#spinner {
+		margin: 2em;
+		font-size: 200%;
+		border: 1px solid #1D487D;
 	}
 
 	@media (min-width: 640px) {
