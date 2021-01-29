@@ -335,7 +335,7 @@ function doneRandomStartTeam() {
 
 {#if fetchDataVisible}
 	<div class="load-screen">
-	<h2>Load Data For When?</h2>
+	<h2>Load Anime For When?</h2>
 	<label>Season:
 		<select bind:value={targetSeason}>
 			{#each avlSeasons as season}
@@ -388,8 +388,9 @@ function doneRandomStartTeam() {
 	}
 
 	h2 {
+		font-weight: 100;
 		text-align: center;
-		color: #dee7f7;
+		color: #1D487D;
 		font-size: 2em;
 	}
 
